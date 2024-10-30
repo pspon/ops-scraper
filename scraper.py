@@ -1,5 +1,6 @@
 from playwright.sync_api import sync_playwright
 from datetime import datetime
+import pytz
 import os
 import pandas as pd
 from glob import glob
@@ -9,7 +10,11 @@ from time import sleep
 
 # Configuration
 page_limit = 40  # Set the number of pages you want to scrape
-folder = f"job_listings_{datetime.now().strftime('%Y%m%d')}"  # Folder name with the current date
+# Set timezone to Eastern Time
+eastern = pytz.timezone('America/New_York')
+# Get the current date in Eastern Time
+current_time_et = datetime.now(eastern).strftime('%Y%m%d')
+folder = f"job_listings_{current_time_et}"  # Folder name with the current date in ET
 
 # Create directories
 os.makedirs('data', exist_ok=True)
