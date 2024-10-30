@@ -5,7 +5,8 @@ permissions:
 
 on:
   schedule:
-    - cron: "38 * * * *"  # Runs at UTC 22:15, EDT 18:15, EST 15:15
+    - cron: '7 * * * *'  # Runs hourly at minute 7
+    #- cron: "38 * * * *"  # Runs hourly at minute 38
   workflow_dispatch:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,11 +30,25 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install
 
+      - name: Check if it's 10 ET
+        id: check_time
+        run: |
+          CURRENT_TIME=$(TZ="America/New_York" date +%H)
+          if [ "$CURRENT_TIME" -eq 10 ]; then
+            echo "It's 10 ET."
+            echo "run_scraper=true" >> $GITHUB_ENV
+          else
+            echo "It's not 10 ET."
+            echo "run_scraper=false" >> $GITHUB_ENV
+          fi
+          
       - name: Run the scraper
+        if: env.run_scraper == 'true'
         run: |
           python scraper.py
 
       - name: Commit and push changes
+        if: env.run_scraper == 'true'
         run: |
           git config --local user.name "github-actions"
           git config --local user.email "github-actions@github.com"
