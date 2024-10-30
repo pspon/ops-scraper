@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: '7 * * * *'  # Runs hourly at minute 7
+    - cron: '17 * * * *'  # Runs hourly at minute 17
   workflow_dispatch:
 
 env:
@@ -36,10 +36,10 @@ jobs:
         run: |
           CURRENT_TIME=$(TZ="America/New_York" date +%H)
           if [ "$CURRENT_TIME" -eq 23 ]; then
-            echo "It's 11PM ET."
+            echo "It's 11:17 ET."
             echo "run_scraper=true" >> $GITHUB_ENV
           else
-            echo "It's not 11PM ET."
+            echo "It's not 11:17 ET."
             echo "run_scraper=false" >> $GITHUB_ENV
           fi
 
