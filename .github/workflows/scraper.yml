@@ -6,7 +6,7 @@ permissions:
 on:
   workflow_dispatch:
   schedule:
-    - cron: "19 13,14,15 * * *"  # Runs at UTC 22:15, EDT 18:15, EST 15:15
+    - cron: "32 13,14,15 * * *"  # Runs at UTC 22:15, EDT 18:15, EST 15:15
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
