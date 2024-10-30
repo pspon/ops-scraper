@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from time import sleep
 
 # Configuration
-page_limit = 40  # Set the number of pages you want to scrape
+page_limit = 5#40  # Set the number of pages you want to scrape
 folder = f"job_listings_{datetime.now().strftime('%Y%m%d')}"  # Folder name with the current date
 
 # Create directories
