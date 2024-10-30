@@ -13,7 +13,7 @@ page_limit = 40  # Set the number of pages you want to scrape
 # Set timezone to Eastern Time
 eastern = pytz.timezone('America/New_York')
 # Get the current date in Eastern Time
-current_time_et = datetime.now(eastern).strftime('%Y%m%d')
+current_time_et = datetime.now(eastern).strftime('%Y%m%d_%H')
 folder = f"job_listings_{current_time_et}"  # Folder name with the current date in ET
 
 # Create directories
