@@ -33,7 +33,7 @@ jobs:
         run: |
           git config --local user.name "github-actions"
           git config --local user.email "github-actions@github.com"
-          git add job_listings_*.csv
+          git add data/job_listings_*.csv
           git commit -m "Update job listings"
           git push
         env:
