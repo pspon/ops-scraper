@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: '29 23 * * *'  # Runs hourly at minute 17
+    - cron: "15 22 * * *"  # Runs at UTC 22:15, EDT 18:15, EST 15:15
   workflow_dispatch:
 
 env:
