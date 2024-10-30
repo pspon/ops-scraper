@@ -1,9 +1,15 @@
 name: Scrape Jobs
 
+permissions:
+  contents: write  # Allow write access to the repository contents
+
 on:
   schedule:
     - cron: '0 0 * * *'  # Runs every day at midnight
   workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   scrape:
@@ -28,7 +34,8 @@ jobs:
       - name: Run the scraper
         run: |
           python scraper.py
-
+      - name: Debug GITHUB_TOKEN
+        run: echo "GITHUB_TOKEN is set"
       - name: Commit and push changes
         run: |
           git config --local user.name "github-actions"
@@ -36,5 +43,5 @@ jobs:
           git add data/job_listings_*.csv
           git commit -m "Update job listings"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
