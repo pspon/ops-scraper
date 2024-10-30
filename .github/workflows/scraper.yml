@@ -4,9 +4,9 @@ permissions:
   contents: write  # Allow write access to the repository contents
 
 on:
-  schedule:
-    - cron: "15 22 * * *"  # Runs at UTC 22:15, EDT 18:15, EST 15:15
   workflow_dispatch:
+  schedule:
+    - cron: "19 13,14,15 * * *"  # Runs at UTC 22:15, EDT 18:15, EST 15:15
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
