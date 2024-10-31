@@ -93,5 +93,5 @@ for file_path in tqdm(files):
     output_df.append(output_dfi)
     #break
 output_df = pd.concat(output_df).reset_index(drop=True)
-output_df.to_csv(os.path.join("data", f"{folder}_TDA.csv"), index=False)
+output_df.to_csv(os.path.join("data", f"{folder}_{posting_type}.csv"), index=False)
 print(f"Saved {len(output_df)} unique job listings to CSV.")
