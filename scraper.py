@@ -53,7 +53,8 @@ def scraper(posting_type):
             page.wait_for_load_state('networkidle')
     
         browser.close()
-scraper("Open")
+posting_type = "Open"
+scraper(posting_type)
 
 # Extract job information from saved HTML files
 files = glob(os.path.join('data', 'html', folder, '*.html'))
