@@ -31,8 +31,11 @@ jobs:
           python -m playwright install
           
       - name: Run the scraper
+        env:
+          POSTING_TYPE: "Open"  # Specify the posting type here
+          PAGE_LIMIT: 40  # Specify the page limit here
         run: |
-          python scraper.py
+          python your_script.py
 
       - name: Commit and push changes
         run: |
