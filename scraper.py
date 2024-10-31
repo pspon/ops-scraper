@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from time import sleep
 
 # Configuration
-page_limit = 40  # Set the number of pages you want to scrape
+default_page_limit = 40  # Default number of pages to scrape
 # Set timezone to Eastern Time
 eastern = pytz.timezone('America/New_York')
 # Get the current date in Eastern Time
@@ -22,14 +22,18 @@ os.makedirs(os.path.join('data', 'html'), exist_ok=True)
 os.makedirs(os.path.join('data', 'html', folder), exist_ok=True)
 
 # Scrape opsjobs with playwright
-def scraper(posting_type):
+def scraper(posting_type, page_limit):
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
         context = browser.new_context(no_viewport=True)
         page = context.new_page()
         page.goto("https://www.gojobs.gov.on.ca/employees/")
+        
+        # Check the checkbox based on posting_type
         if posting_type == "TDA":
             page.get_by_label("Yes").check()  # Extract TDA eligible postings
+        
+        # Perform the search
         page.get_by_role("button", name="Search", exact=True).click()
     
         current_page = 1
@@ -53,17 +57,18 @@ def scraper(posting_type):
             page.wait_for_load_state('networkidle')
     
         browser.close()
-posting_type = "Open"
-scraper(posting_type)
+
+# Get the posting type and page limit from environment variables
+posting_type = os.getenv("POSTING_TYPE", "Open")  # Default to "Open" if not set
+page_limit = int(os.getenv("PAGE_LIMIT", default_page_limit))  # Default to default_page_limit if not set
+
+scraper(posting_type, page_limit)
 
 # Extract job information from saved HTML files
 files = glob(os.path.join('data', 'html', folder, '*.html'))
-#id_list = []
-#job_list = []
 
 output_df = []
 for file_path in tqdm(files):
-    #file_path = files[1]
     with open(file_path, 'rb') as file:
         html_content = file.read()
     
@@ -89,10 +94,10 @@ for file_path in tqdm(files):
         dfs.append(idf)
     dfs = pd.concat(dfs).reset_index(drop=True)
 
-    #merge the two dataframe into output_df
+    # Merge the two dataframe into output_df
     output_dfi = df_ID_TITLE.drop_duplicates(subset='Job ID').reset_index(drop=True).join(dfs)
     output_df.append(output_dfi)
-    #break
+
 output_df = pd.concat(output_df).reset_index(drop=True)
 output_df.to_csv(os.path.join("data", f"{folder}_{posting_type}.csv"), index=False)
 print(f"Saved {len(output_df)} unique job listings to CSV.")
