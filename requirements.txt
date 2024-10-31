@@ -3,3 +3,5 @@ pandas
 matplotlib
 beautifulsoup4
 tqdm
+requests
+pytz
