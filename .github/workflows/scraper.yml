@@ -35,7 +35,7 @@ jobs:
           POSTING_TYPE: "Open"  # Specify the posting type here
           PAGE_LIMIT: 40  # Specify the page limit here
         run: |
-          python your_script.py
+          python scraper.py
 
       - name: Commit and push changes
         run: |
