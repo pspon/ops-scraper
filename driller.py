@@ -38,7 +38,7 @@ def scrape_job_details_v4(job_id):
         Fetches HTML content from the provided URL and parses it into a BeautifulSoup object.
         Implements retry logic for handling HTTP 429 errors (Too Many Requests).
         """
-        max_retries = 5
+        max_retries = 7
         backoff_factor = 1  # Initial wait time for retries
 
         for attempt in range(max_retries):
