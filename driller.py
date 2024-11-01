@@ -152,7 +152,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Save missing job IDs to a text file only if there are any
 if not missing_job_ids.empty:
-    missing_job_ids_file = os.path.join(output_dir, f"{eastern_date}_missing_job_ids.txt")
+    missing_job_ids_file = os.path.join(output_dir, f"{eastern_date_hour}_missing_job_ids.txt")
     with open(missing_job_ids_file, 'w') as f:
         for job_id in missing_job_ids:
             f.write(f"{job_id}\n")
