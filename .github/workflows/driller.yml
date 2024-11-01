@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: '22 2 * * *'  # Runs daily 10PM eastern at minute 22
+    - cron: '21 2,8,14,20 * * *' # Runs 4x daily at minute 21
   workflow_dispatch:
 
 env:
