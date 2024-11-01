@@ -14,7 +14,8 @@ import pytz
 
 # Set the timezone to Eastern Time and get the current date
 eastern = pytz.timezone('America/New_York')
-eastern_date = datetime.now(eastern).strftime('%Y%m%d_%H')
+eastern_date = datetime.now(eastern).strftime('%Y%m%d')
+eastern_date_hour = datetime.now(eastern).strftime('%Y%m%d_%H')
 
 # Load all relevant CSV files for today's job listings
 csv_files = sorted([f for f in os.listdir('data') if f.startswith('job_listings_' + eastern_date)])
@@ -161,7 +162,7 @@ else:
     print("No missing job IDs to save.")
 
 # Save the results to a new CSV file in the specified directory
-output_file = os.path.join(output_dir, f"{eastern_date}_scraped_jobs.csv")
+output_file = os.path.join(output_dir, f"{eastern_date_hour}_scraped_jobs.csv")
 output_df = pd.concat([df.set_index("Job ID"), job_details_df.set_index("Job ID")], axis=1).reset_index()
 output_df.to_csv(output_file, index=False)
 
