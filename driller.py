@@ -14,7 +14,7 @@ import pytz
 
 # Set the timezone to Eastern Time and get the current date
 eastern = pytz.timezone('America/New_York')
-eastern_date = datetime.now(eastern).strftime('%Y%m%d')
+eastern_date = datetime.now(eastern).strftime('%Y%m%d_%H')
 
 # Load all relevant CSV files for today's job listings
 csv_files = sorted([f for f in os.listdir('data') if f.startswith('job_listings_' + eastern_date)])
