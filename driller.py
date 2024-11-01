@@ -162,7 +162,7 @@ else:
 
 # Save the results to a new CSV file in the specified directory
 output_file = os.path.join(output_dir, f"{eastern_date}_scraped_jobs.csv")
-output_df = pd.concat([df.set_index("Job ID"), job_details_df.set_index("Job ID")], axis=1).reset_index(drop=True)
+output_df = pd.concat([df.set_index("Job ID"), job_details_df.set_index("Job ID")], axis=1).reset_index()
 output_df.to_csv(output_file, index=False)
 
 print(f"Scraping completed. Results saved to {output_file}.")
