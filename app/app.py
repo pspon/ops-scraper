@@ -95,7 +95,7 @@ if not data.empty:
     #posted_on_filter = st.sidebar.date_input("Posted On",value=None)
     posted_on_filter = st.sidebar.text_input("Posted On")
     note_filter = st.sidebar.text_input("Note")
-    purpose_of_position_filter = st.sidebar.text_input("Purpose of Position")
+    purpose_of_position_filter = st.sidebar.text_input("Purpose of Position",value="data")
     duties_filter = st.sidebar.text_input("Duties and Responsibilities")
     staffing_filter = st.sidebar.text_input("Staffing & Licensing")
     knowledge_filter = st.sidebar.text_input("Knowledge")
