@@ -43,6 +43,7 @@ data = load_data()
 
 # Process data
 if not data.empty:
+    
     # Clean and convert relevant columns
     data['Closing Date'] = pd.to_datetime(data['Closing Date'].str.replace(r'(?i)(pm).*', '', regex=True), errors='coerce')
     data['Closing Week'] = data['Closing Date'].dt.isocalendar().apply(lambda x: f"{x['year']}-{x['week']:02}", axis=1)
@@ -55,6 +56,7 @@ if not data.empty:
     # Filter for rows after today's date
     data = data[data['Closing Date'] > today]
 
+    #data = data.fillna("", inplace=True)
     # Convert date columns to datetime format
     #data['Closing Date'] = pd.to_datetime(data['Closing Date'], errors='coerce')
     #data['Posted on'] = pd.to_datetime(data['Posted on'], errors='coerce')
@@ -149,17 +151,17 @@ if not data.empty:
     if note_filter:
         filtered_data = filtered_data[filtered_data['Note'].fillna('').str.contains(note_filter, case=False)]
     if purpose_of_position_filter:
-        filtered_data = filtered_data[filtered_data['Purpose of Position'].str.contains(purpose_of_position_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Purpose of Position'].fillna('').str.contains(purpose_of_position_filter, case=False)]
     if duties_filter:
-        filtered_data = filtered_data[filtered_data['Duties and Responsibilities'].str.contains(duties_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Duties and Responsibilities'].fillna('').str.contains(duties_filter, case=False)]
     if staffing_filter:
-        filtered_data = filtered_data[filtered_data['Staffing & Licensing'].str.contains(staffing_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Staffing & Licensing'].fillna('').str.contains(staffing_filter, case=False)]
     if knowledge_filter:
-        filtered_data = filtered_data[filtered_data['Knowledge'].str.contains(knowledge_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Knowledge'].fillna('').str.contains(knowledge_filter, case=False)]
     if skills_filter:
-        filtered_data = filtered_data[filtered_data['Skills'].str.contains(skills_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Skills'].fillna('').str.contains(skills_filter, case=False)]
     if freedom_of_action_filter:
-        filtered_data = filtered_data[filtered_data['Freedom of Action'].str.contains(freedom_of_action_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Freedom of Action'].fillna('').str.contains(freedom_of_action_filter, case=False)]
 
 
     # Display the interactive DataFrame
@@ -168,13 +170,14 @@ if not data.empty:
     # Use a multiselect to choose job postings
     if not filtered_data.empty:
         job_titles = filtered_data['Job Title'].tolist()
-        selected_job_titles = st.multiselect("Select Job Postings", job_titles, default = job_titles)
+        with st.expander(f"Selected Job Postings"):
+            selected_job_titles = st.multiselect("Select Job Postings", job_titles, default = job_titles)
 
         # Display details for each selected job in tabs
         if selected_job_titles:
             for job_title in selected_job_titles:
                 selected_job = filtered_data[filtered_data['Job Title'] == job_title].iloc[0]
-                with st.expander(f"Details for {selected_job['Job Title']}"):
+                with st.expander(f"↪   {selected_job['Job Title']}"):
                     st.write("### Job Details")
                     st.write(f"**Job Title:** {selected_job['Job Title']}")
                     st.write(f"**Job ID:** {selected_job['Job ID']}")
