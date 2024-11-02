@@ -49,6 +49,9 @@ if not data.empty:
     data['Closing Week'] = data['Closing Date'].dt.isocalendar().apply(lambda x: f"{x['year']}-{x['week']:02}", axis=1)
     data['Count'] = 1  # For counting
 
+    # Convert 'Job ID' to string type
+    data['Job ID'] = data['Job ID'].astype(str)
+    
     # Get today's date in Eastern Time
     eastern = pytz.timezone('US/Eastern')
     today = pd.Timestamp(datetime.now(eastern).date())  # Convert to Timestamp for comparison
