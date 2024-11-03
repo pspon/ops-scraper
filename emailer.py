@@ -121,8 +121,8 @@ def create_styled_email_body_v5(job_ids, df):
 
 # Function to send an email with job postings
 def send_mail(keyword, dataframe):
-    sender_email = "peter.hung.on@gmail.com"
-    receiver_email = "ham@peter.science"
+    sender_email = os.getenv("SENDER_EMAIL")
+    receiver_email = os.getenv("RECEIVER_EMAIL")
     password = os.getenv("EMAIL_PASSWORD")
     subject = f"OPS {keyword} jobs closing this week"
 
@@ -195,7 +195,7 @@ if not data.empty:
     )
 
     # Look for jobs and send email if applicable
-    keywords = ['analytics', 'data', 'business intelligence']
+    keywords = ['analytic', 'data', 'business intelligence', 'python', 'dashboard', 'statistic']
     for keyword in keywords:
         df_jobs = data[(data['Job Description'].str.contains(keyword, case=False)) & (data['Closing Week'] == thisweek)].sort_values('Closing Date')
         if len(df_jobs) > 0:
