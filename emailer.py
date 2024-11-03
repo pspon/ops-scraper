@@ -195,7 +195,7 @@ if not data.empty:
     )
 
     # Look for jobs and send email if applicable
-    keywords = ['analytic', 'data', 'business intelligence', 'python', 'dashboard', 'statistic']
+    keywords = ['analytic', 'research', 'business intelligence', 'python', 'dashboard', 'machine learning', 'artificial intelligence']
     for keyword in keywords:
         df_jobs = data[(data['Job Description'].str.contains(keyword, case=False)) & (data['Closing Week'] == thisweek)].sort_values('Closing Date')
         if len(df_jobs) > 0:
