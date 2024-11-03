@@ -236,7 +236,7 @@ if not data.empty:
     with col1:
 
         # Visualization: Jobs per closing date
-        jobs_per_day = data.groupby(data['Closing Date'].dt.date).size()
+        jobs_per_day = filtered_data.groupby(data['Closing Date'].dt.date).size()
         
         # Number of Job Postings by Closing Date
         st.subheader('Number of Job Postings by Closing Date')
@@ -249,7 +249,7 @@ if not data.empty:
         st.pyplot(fig)
     
         # Number of Job Postings by Organization
-        jobs_per_org = data.groupby('Organization').size().sort_values(ascending=True)
+        jobs_per_org = filtered_data.groupby('Organization').size().sort_values(ascending=True)
     
         st.subheader('Number of Job Postings by Organization')
         fig, ax = plt.subplots()
@@ -260,7 +260,7 @@ if not data.empty:
         st.pyplot(fig)
     
         # Number of Job Postings by Closing Week of Year
-        jobs_per_week_of_year = data.groupby('Closing Week').size()
+        jobs_per_week_of_year = filtered_data.groupby('Closing Week').size()
     
         st.subheader('Number of Job Postings by Closing Week of Year')
         fig, ax = plt.subplots()
