@@ -7,7 +7,7 @@ from datetime import datetime
 import numpy as np
 
 # Function to get CSV filenames dynamically from GitHub using API
-@st.cache_data
+@st.cache_data(ttl=3600)  # Cache for 1 hour to reduce frequent API calls
 def get_csv_filenames():
     url = "https://api.github.com/repos/pspon/ops-scraper/contents/data/jobs"
     response = requests.get(url)
@@ -19,27 +19,43 @@ def get_csv_filenames():
     csv_files = [file['download_url'] for file in files if file['name'].endswith('scraped_jobs.csv')]
     return csv_files
 
-# Function to download and merge CSV files
+# Function to download and merge CSV files with cache handling for new files
 @st.cache_data
 def load_data():
     csv_files = get_csv_filenames()
-    all_data = []
 
-    for url in csv_files:
-        response = requests.get(url)
-        if response.status_code == 200:
-            df = pd.read_csv(url)
-            all_data.append(df)
+    # Check for new files by comparing with cached filenames
+    try:
+        cached_files = st.session_state.get('cached_csv_files', [])
+        if cached_files != csv_files:
+            st.session_state.cached_csv_files = csv_files  # Update cache
+            st.session_state.data_loaded = False  # Flag to reload data
+    except KeyError:
+        st.session_state.cached_csv_files = csv_files  # Initialize if not set
+        st.session_state.data_loaded = False
+
+    # Load data only if it's not already loaded
+    if not st.session_state.get('data_loaded', False):
+        all_data = []
+
+        for url in csv_files:
+            response = requests.get(url)
+            if response.status_code == 200:
+                df = pd.read_csv(url)
+                all_data.append(df)
+            else:
+                st.warning(f"Failed to load {url}")
+
+        if all_data:
+            combined_data = pd.concat(all_data, ignore_index=True)
+            combined_data = combined_data.drop_duplicates(subset='Job ID').reset_index(drop=True)
+            st.session_state.data_loaded = True  # Set flag to true after loading
+            return combined_data
         else:
-            st.warning(f"Failed to load {url}")
-
-    if all_data:
-        combined_data = pd.concat(all_data, ignore_index=True)
-        combined_data = combined_data.drop_duplicates(subset='Job ID').reset_index(drop=True)
-        return combined_data
+            st.warning("No data available to display.")
+            return pd.DataFrame()
     else:
-        st.warning("No data available to display.")
-        return pd.DataFrame()
+        return pd.DataFrame()  # Return empty DataFrame if already loaded
 
 # Load the data
 data = load_data()
