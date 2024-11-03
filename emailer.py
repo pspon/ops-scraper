@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import pytz
+import os
 
 # Function to get CSV filenames dynamically from a GitHub repository
 def get_csv_filenames():
@@ -122,7 +123,7 @@ def create_styled_email_body_v5(job_ids, df):
 def send_mail(keyword, dataframe):
     sender_email = "peter.hung.on@gmail.com"
     receiver_email = "ham@peter.science"
-    password = "your_password_here"  # Ensure to use environment variables for sensitive info
+    password = os.getenv("EMAIL_PASSWORD")
     subject = f"OPS {keyword} jobs closing this week"
 
     # Create email
