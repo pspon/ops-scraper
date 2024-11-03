@@ -6,6 +6,9 @@ import pytz
 from datetime import datetime
 import numpy as np
 
+# Set page configuration to wide mode
+st.set_page_config(layout="wide")
+
 # Function to get CSV filenames dynamically from GitHub using API
 @st.cache_data(ttl=3600)  # Cache for 1 hour to reduce frequent API calls
 def get_csv_filenames():
@@ -124,8 +127,7 @@ if not data.empty:
     #data['Closing Date'] = pd.to_datetime(data['Closing Date'], errors='coerce')
     #data['Posted on'] = pd.to_datetime(data['Posted on'], errors='coerce')
     
-    # Set page configuration to wide mode
-    st.set_page_config(layout="wide")
+
 
     # Streamlit App
     st.title("Job Data Visualization and Interactive DataFrame")
