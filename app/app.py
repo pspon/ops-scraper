@@ -7,6 +7,7 @@ from datetime import datetime
 import numpy as np
 
 # Function to get CSV filenames dynamically from GitHub using API
+@st.cache_data
 def get_csv_filenames():
     url = "https://api.github.com/repos/pspon/ops-scraper/contents/data/jobs"
     response = requests.get(url)
@@ -19,6 +20,7 @@ def get_csv_filenames():
     return csv_files
 
 # Function to download and merge CSV files
+@st.cache_data
 def load_data():
     csv_files = get_csv_filenames()
     all_data = []
