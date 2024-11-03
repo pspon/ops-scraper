@@ -4,6 +4,7 @@ import requests
 import matplotlib.pyplot as plt
 import pytz
 from datetime import datetime
+import numpy as np
 
 # Function to get CSV filenames dynamically from GitHub using API
 def get_csv_filenames():
@@ -59,17 +60,54 @@ if not data.empty:
     # Filter for rows after today's date
     data = data[data['Closing Date'] > today]
 
+    # Regex patterns to extract salaries and pay frequency
+    salary_pattern = r'\$([\d,]+\.\d{2})  - \$([\d,]+\.\d{2})'
+    frequency_pattern = r'Per (Year|Week|Hour)'
+    
+    # Extract Minimum and Maximum Salaries
+    salary_matches = data['Salary'].str.extract(salary_pattern)
+    data['Minimum Salary'] = salary_matches[0].str.replace(',', '').astype(float)
+    data['Maximum Salary'] = salary_matches[1].str.replace(',', '').astype(float)
+    
+    # Extract Pay Frequency
+    data['Pay Frequency'] = data['Salary'].str.extract(frequency_pattern)
+    
+    # Adjust Minimum and Maximum Salary to yearly values
+    data['Adjusted Minimum Salary'] = np.where(
+        data['Pay Frequency'] == 'Hour',
+        data['Minimum Salary'] * 36.25 * 52,  # Convert hourly to yearly
+        np.where(
+            data['Pay Frequency'] == 'Week',
+            data['Minimum Salary'] * 52,  # Convert weekly to yearly
+            data['Minimum Salary']  # Already yearly
+        )
+    )
+    
+    data['Adjusted Maximum Salary'] = np.where(
+        data['Pay Frequency'] == 'Hour',
+        data['Maximum Salary'] * 36.25 * 52,  # Convert hourly to yearly
+        np.where(
+            data['Pay Frequency'] == 'Week',
+            data['Maximum Salary'] * 52,  # Convert weekly to yearly
+            data['Maximum Salary']  # Already yearly
+        )
+    )
+    
+    # Format the Adjusted Salary Range
+    data['Adjusted Salary Range'] = data.apply(
+        lambda row: f"${row['Adjusted Minimum Salary']:.2f} - ${row['Adjusted Maximum Salary']:.2f}"
+        if pd.notna(row['Adjusted Minimum Salary']) and pd.notna(row['Adjusted Maximum Salary'])
+        else np.nan,
+        axis=1
+    )
+    
     #data = data.fillna("", inplace=True)
     # Convert date columns to datetime format
     #data['Closing Date'] = pd.to_datetime(data['Closing Date'], errors='coerce')
     #data['Posted on'] = pd.to_datetime(data['Posted on'], errors='coerce')
-
-    # Create visualizations once and store in session state
-    if 'visualizations_ready' not in st.session_state:
-        st.session_state.visualizations_ready = True
-        st.session_state.jjobs_per_day = data.groupby(data['Closing Date'].dt.date)['Count'].sum()
-        st.session_state.jobs_per_org = data.groupby('Organization')['Count'].sum().sort_values(ascending=True)
-        st.session_state.jobs_per_week_of_year = data.groupby('Closing Week')['Count'].sum()
+    
+    # Set page configuration to wide mode
+    st.set_page_config(layout="wide")
 
     # Streamlit App
     st.title("Job Data Visualization and Interactive DataFrame")
@@ -166,38 +204,86 @@ if not data.empty:
     if freedom_of_action_filter:
         filtered_data = filtered_data[filtered_data['Freedom of Action'].fillna('').str.contains(freedom_of_action_filter, case=False)]
 
+    # Display raw data
+    with st.expander(f"Show Raw Data"):
+        st.subheader("Raw Data")
+        st.write(data)
 
-    # Display the interactive DataFrame
-    st.subheader("Interactive Job Postings Data")
+    # Create two columns
+    col1, col2 = st.columns(2)
 
-    # Use a multiselect to choose job postings
-    if not filtered_data.empty:
-        job_titles = filtered_data['Job Title'].tolist()
-        with st.expander(f"Selected Job Postings"):
-            selected_job_titles = st.multiselect("Select Job Postings", job_titles, default = job_titles)
+    # Add content to the first column
+    with col1:
 
-        # Display details for each selected job in tabs
-        if selected_job_titles:
-            for job_title in selected_job_titles:
-                selected_job = filtered_data[filtered_data['Job Title'] == job_title].iloc[0]
-                with st.expander(f"↪   {selected_job['Job Title']}"):
-                    st.write("### Job Details")
-                    st.write(f"**Job Title:** {selected_job['Job Title']}")
-                    st.write(f"**Job ID:** {selected_job['Job ID']}")
-                    st.write(f"**Position Title:** {selected_job['Position Title']}")
-                    st.write(f"**Closing Date:** {selected_job['Closing Date']}")
-                    st.write(f"**Posting Status:** {selected_job['Posting Status']}")
-                    st.write(f"**Posted on:** {selected_job['Posted on']}")
-                    st.write(f"**Salary:** {selected_job['Salary']}")
-                    st.write(f"**Job Term:** {selected_job['Job Term']}")
-                    st.write(f"**Job Code:** {selected_job['Job Code']}")
-                    st.write(f"**Category:** {selected_job['Category']}")
-                    st.write(f"**Compensation Group:** {selected_job['Compensation Group']}")
-                    st.write(f"**Organization:** {selected_job['Organization']}")
-                    st.write(f"**Division:** {selected_job['Division']}")
-                    st.write(f"**Location:** {selected_job['Location']}")
-                    st.write(f"**Address:** {selected_job['Address']}")
-                    st.write(f"**Purpose of Position:** {selected_job['Purpose of Position']}")
-                    st.write(f"**Job Description:** {selected_job['Job Description']}")
-                    st.write("---")
+        # Visualization: Jobs per closing date
+        jobs_per_day = data.groupby(data['Closing Date'].dt.date).size()
+        
+        # Number of Job Postings by Closing Date
+        st.subheader('Number of Job Postings by Closing Date')
+        fig, ax = plt.subplots()
+        jobs_per_day.plot(kind='bar', ax=ax)
+        ax.set_title('Number of Job Postings by Closing Date')
+        ax.set_xlabel('Closing Date')
+        ax.set_ylabel('Number of Job Postings')
+        plt.xticks(rotation=90)
+        st.pyplot(fig)
+    
+        # Number of Job Postings by Organization
+        jobs_per_org = data.groupby('Organization').size().sort_values(ascending=True)
+    
+        st.subheader('Number of Job Postings by Organization')
+        fig, ax = plt.subplots()
+        jobs_per_org.plot(kind='barh', ax=ax)
+        ax.set_title('Number of Job Postings by Organization')
+        ax.set_xlabel('Number of Job Postings')
+        ax.set_ylabel('Organization')
+        st.pyplot(fig)
+    
+        # Number of Job Postings by Closing Week of Year
+        jobs_per_week_of_year = data.groupby('Closing Week').size()
+    
+        st.subheader('Number of Job Postings by Closing Week of Year')
+        fig, ax = plt.subplots()
+        jobs_per_week_of_year.plot(kind='bar', ax=ax)
+        ax.set_title('Number of Job Postings by Closing Week of Year')
+        ax.set_xlabel('Closing Week of Year')
+        ax.set_ylabel('Number of Job Postings')
+        plt.xticks(rotation=90)
+        st.pyplot(fig)
+
+    # Add content to the second column
+    with col2:
+        # Display the interactive DataFrame
+        st.subheader("Interactive Job Postings")        
+            
+        # Use a multiselect to choose job postings
+        if not filtered_data.empty:
+            job_titles = filtered_data['Job Title'].tolist()
+            with st.expander(f"Selected Job Postings"):
+                selected_job_titles = st.multiselect("Select Job Postings", job_titles, default = job_titles)
+    
+            # Display details for each selected job in tabs
+            if selected_job_titles:
+                for job_title in selected_job_titles:
+                    selected_job = filtered_data[filtered_data['Job Title'] == job_title].iloc[0]
+                    with st.expander(f"↪   {selected_job['Job Title']}"):
+                        st.write("### Job Details")
+                        st.write(f"**Job Title:** {selected_job['Job Title']}")
+                        st.write(f"**Job ID:** {selected_job['Job ID']}")
+                        st.write(f"**Position Title:** {selected_job['Position Title']}")
+                        st.write(f"**Closing Date:** {selected_job['Closing Date']}")
+                        st.write(f"**Posting Status:** {selected_job['Posting Status']}")
+                        st.write(f"**Posted on:** {selected_job['Posted on']}")
+                        st.write(f"**Salary:** \${selected_job['Adjusted Minimum Salary']:,.2f} - \${selected_job['Adjusted Maximum Salary']:,.2f}")
+                        st.write(f"**Job Term:** {selected_job['Job Term']}")
+                        st.write(f"**Job Code:** {selected_job['Job Code']}")
+                        st.write(f"**Category:** {selected_job['Category']}")
+                        st.write(f"**Compensation Group:** {selected_job['Compensation Group']}")
+                        st.write(f"**Organization:** {selected_job['Organization']}")
+                        st.write(f"**Division:** {selected_job['Division']}")
+                        st.write(f"**Location:** {selected_job['Location']}")
+                        st.write(f"**Address:** {selected_job['Address']}")
+                        st.write(f"**Purpose of Position:** {selected_job['Purpose of Position']}")
+                        st.write(f"**Job Description:** {selected_job['Job Description']}")
+                        st.write("---")
 
