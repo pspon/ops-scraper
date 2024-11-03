@@ -1,0 +1,29 @@
+name: Email Job Notifications
+
+on:
+  schedule:
+    # Runs every Monday at 7 AM ET (standard time) or 8 AM ET (daylight saving time)
+    - cron: '0 12 * * 1'  # 7 AM EST (UTC-5)
+  workflow_dispatch:
+
+jobs:
+  emailer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # or your preferred version
+
+      - name: Install dependencies
+        run: |
+          pip install pandas requests numpy pytz
+
+      - name: Run the script
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}  # Pass the secret to the environment
+        run: |
+          python emailer.py
