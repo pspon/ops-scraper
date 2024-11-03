@@ -1,5 +1,4 @@
 import pandas as pd
-import streamlit as st
 import requests
 import numpy as np
 import smtplib
@@ -13,7 +12,7 @@ def get_csv_filenames():
     url = "https://api.github.com/repos/pspon/ops-scraper/contents/data/jobs"
     response = requests.get(url)
     if response.status_code != 200:
-        st.warning("Failed to load GitHub directory.")
+        print("Failed to load GitHub directory.")
         return []
 
     files = response.json()
@@ -32,7 +31,7 @@ def load_data():
             df = pd.read_csv(url)
             all_data.append(df)
         else:
-            st.warning(f"Failed to load {url}")
+            print(f"Failed to load {url}")
 
     # Combine data and drop duplicates based on 'Job ID'
     if all_data:
@@ -40,7 +39,7 @@ def load_data():
         combined_data = combined_data.drop_duplicates(subset='Job ID').reset_index(drop=True)
         return combined_data
     else:
-        st.warning("No data available to display.")
+        print("No data available to display.")
         return pd.DataFrame()
 
 # Function to create a styled email body with job postings
