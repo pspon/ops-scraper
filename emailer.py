@@ -124,7 +124,6 @@ def send_mail(keyword, dataframe):
     sender_email = os.getenv("SENDER_EMAIL")
     receiver_email = os.getenv("RECEIVER_EMAIL")
     password = os.getenv("EMAIL_PASSWORD")
-    salary_cutoff = os.getenv("SALARY_CUTOFF")
     subject = f"OPS {keyword} jobs closing this week"
 
     # Create email
@@ -195,6 +194,9 @@ if not data.empty:
         axis=1
     )
 
+    # Load salary_cutoff
+    salary_cutoff = os.getenv("SALARY_CUTOFF")
+    
     # Look for jobs and send email if applicable
     keywords = ['analytic', 'research', 'business intelligence', 'python', 'dashboard', 'machine learning', 'artificial intelligence']
     for keyword in keywords:
