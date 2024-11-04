@@ -195,7 +195,7 @@ if not data.empty:
     )
 
     # Load salary_cutoff
-    salary_cutoff = os.getenv("SALARY_CUTOFF")
+    salary_cutoff = float(os.getenv("SALARY_CUTOFF"))
     
     # Look for jobs and send email if applicable
     keywords = ['analytic', 'research', 'business intelligence', 'python', 'dashboard', 'machine learning', 'artificial intelligence']
