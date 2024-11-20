@@ -1,0 +1,33 @@
+name: Email Job Notifications (Daily New Jobs)
+
+on:
+  schedule:
+    # Runs every day at 8 PM EST (standard time) or 9 PM EDT (daylight saving time)
+    - cron: '0 1 * * *'  # 8 PM EST (UTC-5)
+  workflow_dispatch:
+
+jobs:
+  daily-mailer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # or your preferred version
+
+      - name: Install dependencies
+        run: |
+          pip install pandas requests numpy pytz
+
+      - name: Run the script
+        env:
+          # Pass the secret to the environment
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+          SALARY_CUTOFF: ${{ secrets.SALARY_CUTOFF }}
+        run: |
+          python daily-mailer.py
