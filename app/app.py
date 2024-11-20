@@ -181,8 +181,8 @@ if not data.empty:
     if location_filter:
         filtered_data = filtered_data[filtered_data['Location'].str.contains(location_filter, case=False)]
     if closing_date_filter:
-        #filtered_data = filtered_data[filtered_data['Closing Date'] == pd.to_datetime(closing_date_filter)]
-        filtered_data = filtered_data[filtered_data['Closing Date'].str.contains(closing_date_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Closing Date'] == pd.to_datetime(closing_date_filter)]
+        #filtered_data = filtered_data[filtered_data['Closing Date'].str.contains(closing_date_filter, case=False)]
     if position_title_filter:
         filtered_data = filtered_data[filtered_data['Position Title'].str.contains(position_title_filter, case=False)]
     if job_description_filter:
@@ -208,8 +208,8 @@ if not data.empty:
     if category_filter:
         filtered_data = filtered_data[filtered_data['Category'].str.contains(category_filter, case=False)]
     if posted_on_filter:
-        #filtered_data = filtered_data[filtered_data['Posted on'] == pd.to_datetime(posted_on_filter)]
-        filtered_data = filtered_data[filtered_data['Posted on'].str.contains(posted_on_filter, case=False)]
+        filtered_data = filtered_data[filtered_data['Posted on'] == pd.to_datetime(posted_on_filter)]
+        #filtered_data = filtered_data[filtered_data['Posted on'].str.contains(posted_on_filter, case=False)]
     if note_filter:
         filtered_data = filtered_data[filtered_data['Note'].fillna('').str.contains(note_filter, case=False)]
     if purpose_of_position_filter:
