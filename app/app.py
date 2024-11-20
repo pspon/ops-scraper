@@ -67,6 +67,7 @@ data = load_data()
 if not data.empty:
     
     # Clean and convert relevant columns
+    data['Posted on'] = pd.to_datetime(data['Posted on'].str.replace(r'(?i)(pm).*', '', regex=True), errors='coerce')
     data['Closing Date'] = pd.to_datetime(data['Closing Date'].str.replace(r'(?i)(pm).*', '', regex=True), errors='coerce')
     data['Closing Week'] = data['Closing Date'].dt.isocalendar().apply(lambda x: f"{x['year']}-{x['week']:02}", axis=1)
     data['Count'] = 1  # For counting
