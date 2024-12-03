@@ -44,7 +44,7 @@ def scrape_job_details_v4(job_id):
 
         for attempt in range(max_retries):
             try:
-                response = requests.get(url)
+                response = requests.get(url, verify=False)
                 response.raise_for_status()
                 return BeautifulSoup(response.text, 'html.parser')
             except requests.exceptions.HTTPError as http_err:
