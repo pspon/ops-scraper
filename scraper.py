@@ -25,7 +25,7 @@ os.makedirs(os.path.join('data', 'html', folder), exist_ok=True)
 def scraper(posting_type, page_limit):
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
-        context = browser.new_context(no_viewport=True)
+        context = browser.new_context(no_viewport=True, ignore_https_errors=True)
         page = context.new_page()
         page.goto("https://www.gojobs.gov.on.ca/employees/")
         
